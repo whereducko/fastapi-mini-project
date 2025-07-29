@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>База данных</title>
+    <style>
+        .links {
+            margin: 7px 0;
+        }
+    </style>
+</head>
+<body>
+<h1>
+    База данных пользователей
+</h1>
+<table border="1" style="margin-bottom: 15px;">
+    <thead>
+        <tr>
+            <th>id</th>
+            <th>username</th>
+            <th>password</th>
+            <th>email</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for user in database %}
+        <tr>
+            <td>{{ user["id"] }}</td>
+            <td>{{ user["username"] }}</td>
+            <td>{{ user["password"] }}</td>
+            <td>{{ user["email"] }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+<div class="links">
+    <a href="/db/add">Добавить пользователя</a>
+</div>
+<div class="links">
+    <a href="/db/update">Обновить данные пользователя</a>
+</div>
+<div class="links">
+    <a href="/db/delete">Удалить пользователя</a>
+</div>
+<div style="margin-top: 40px;">
+    <a href="/">Вернуться на главную страницу</a>
+</div>
+</body>
+</html>

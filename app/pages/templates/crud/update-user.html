@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>База данных | Обновить</title>
+</head>
+<body>
+<h1>Обновить данные пользователя в бд</h1>
+<form action="/db/update" method="post">
+    <div>
+        <label>Введите id пользователя, чьи данные обновить</label>
+        <input type="text" name="id_input" required>
+    </div>
+    <p>Введите новые данные:</p>
+    <div>
+        <label>username</label>
+        <input type="text" name="username_input">
+    </div>
+    <div>
+        <label>password</label>
+        <input type="text" name="password_input">
+    </div>
+    <div>
+        <label>email</label>
+        <input type="text" name="email_input">
+    </div>
+    <button type="submit">Обновить</button>
+</form>
+<div style="margin-top: 40px;">
+    <a href="/db">Вернуться</a>
+</div>
+</body>
+</html>

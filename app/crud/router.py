@@ -1,0 +1,70 @@
+from fastapi import APIRouter, Request, Depends, Form
+from fastapi.templating import Jinja2Templates
+from fastapi.responses import RedirectResponse
+from app.utils import token_authenticate_user
+from app.database import (
+    get_db_func,
+    insert_db_func,
+    update_db_func,
+    delete_user_from_db_func
+)
+
+router = APIRouter(prefix="/db", tags=["БД. CRUD"])
+templates = Jinja2Templates(directory="pages/templates/crud")
+
+
+@router.get("")
+def get_db(request: Request, is_auth: dict | bool = Depends(token_authenticate_user)):
+    if is_auth:
+        return templates.TemplateResponse("db-users.html", {"request": request, "database": get_db_func()})
+    return RedirectResponse(url="/login", status_code=302)
+
+
+@router.get("/add")
+def add_user_page(request: Request, is_auth: dict | bool = Depends(token_authenticate_user)):
+    if is_auth:
+        return templates.TemplateResponse("add-user.html", {"request": request})
+    return RedirectResponse(url="/login", status_code=302)
+
+
+@router.post("/add")
+def add_user_in_db(
+        id_input: str = Form(...),
+        username_input: str = Form(...),
+        password_input: str = Form(...),
+        email_input: str = Form(...),
+):
+    insert_db_func(int(id_input), username_input, password_input, email_input)
+    return RedirectResponse("/db", status_code=302)
+
+
+@router.get("/update")
+def add_user_page(request: Request, is_auth: dict | bool = Depends(token_authenticate_user)):
+    if is_auth:
+        return templates.TemplateResponse("update-user.html", {"request": request})
+
+
+@router.post("/update")
+def update_user_in_db(
+        id_input: str = Form(...),
+        username_input: str = Form(...),
+        password_input: str = Form(...),
+        email_input: str = Form(...),
+):
+    update_db_func(int(id_input), username_input, password_input, email_input)
+    return RedirectResponse("/db", status_code=302)
+
+
+@router.get("/delete")
+def add_user_page(request: Request, is_auth: dict | bool = Depends(token_authenticate_user)):
+    if is_auth:
+        return templates.TemplateResponse("delete-user.html", {"request": request})
+    return RedirectResponse(url="/login", status_code=302)
+
+
+@router.post("/delete")
+def delete_user_from_db(
+        id_input: str = Form(...),
+):
+    delete_user_from_db_func(int(id_input))
+    return RedirectResponse("/db", status_code=302)

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>База данных | Добавить</title>
+</head>
+<body>
+<h1>Добавить пользователя в бд</h1>
+<p>Важно учитывать:<br>
+    - id и username должны быть уникальными<br>
+    - email может быть пустым
+</p>
+<form action="/db/add" method="post">
+    <div>
+        <label>id</label>
+        <input type="text" name="id_input" required>
+    </div>
+    <div>
+        <label>username</label>
+        <input type="text" name="username_input" required>
+    </div>
+    <div>
+        <label>password</label>
+        <input type="text" name="password_input" required>
+    </div>
+    <div>
+        <label>email</label>
+        <input type="text" name="email_input">
+    </div>
+    <button type="submit">Добавить</button>
+</form>
+<div style="margin-top: 40px;">
+    <a href="/db">Вернуться</a>
+</div>
+</body>
+</html>
