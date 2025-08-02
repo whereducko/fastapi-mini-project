@@ -68,7 +68,7 @@ def login_page(
     return RedirectResponse(url="/login", status_code=302)
 
 
-@app.get("/logout")
+@app.post("/logout")
 def logout():
     response = RedirectResponse(url="/login", status_code=302)
     response.delete_cookie("access_token")
