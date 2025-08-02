@@ -1,6 +1,6 @@
 import jwt
 from jwt.exceptions import InvalidTokenError
-from fastapi import Request
+from fastapi import Request, Depends, HTTPException
 from datetime import datetime, timedelta
 from passlib.context import CryptContext
 
@@ -21,12 +21,25 @@ def check_password(input_pass: str, pass_on_db: str) -> bool:
 
 
 # создать jwt токен
-def create_access_token(data: dict) -> str:
+def create_jwt_token(data: dict, type_token: str, expire_hours: int | float) -> str:
     to_encode = data.copy()
-    expire = datetime.utcnow() + timedelta(minutes=15)
-    to_encode.update({"exp": expire})
+    type_t = type_token
+    expire = datetime.utcnow() + timedelta(hours=expire_hours)
+    to_encode.update({"type": type_t, "exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, ALGORITHM)
     return encoded_jwt
+
+
+# создать jwt access токен
+def create_access_token(data: dict) -> str:
+    token = create_jwt_token(data, "access", 0.25)
+    return token
+
+
+# создать jwt refresh токен
+def create_refresh_token(data: dict) -> str:
+    token = create_jwt_token(data, "refresh", 720)
+    return token
 
 
 # декодировать jwt токен
@@ -35,23 +48,24 @@ def decode_jwt_token(token: str) -> dict:
     return decoded_jwt
 
 
-# получить юзера без пароля в виде словаря из бд / для регистрации
-def get_user_from_db_wo_pass(db: list, username: str) -> dict | None:
-    for user in db:
-        if user["username"] == username:
-            new_user = user.copy()
-            new_user.pop("password")
-            return new_user
-    return None
-
-
-# получить юзера из бд (тоже без пароля) / для входа
-def get_user_from_db(db: list, username: str, password: str) -> dict | None:
-    for user in db:
-        if user["username"] == username and check_password(password, user["password"]):
-            new_user = user.copy()
-            new_user.pop("password")
-            return new_user
+# получить юзера из бд | для регистрации и входа
+def get_user_from_db(
+        db: list,
+        username: str,
+        password: str | None = None
+) -> dict | None:
+    if password is None:
+        for user in db:
+            if user["username"] == username:
+                new_user = user.copy()
+                new_user.pop("password")
+                return new_user
+    else:
+        for user in db:
+            if user["username"] == username and check_password(password, user["password"]):
+                new_user = user.copy()
+                new_user.pop("password")
+                return new_user
     return None
 
 
@@ -67,12 +81,35 @@ def insert_new_user_in_db(db: list, username: str, password: str) -> int:
     return new_id
 
 
+# функция для проверки токена (есть ли токен в куках)
 def token_authenticate_user(request: Request) -> dict | bool:
-    token = request.cookies.get("access_token")
-    if token:
+    access_token = request.cookies.get("access_token")
+    refresh_token = request.cookies.get("refresh_token")
+    if access_token:  # есть ли access_token?
         try:
-            decoded_token = decode_jwt_token(token)
-            return decoded_token
-        except InvalidTokenError:  # если токен неправильный
+            decoded_acc_token = decode_jwt_token(access_token)
+            return decoded_acc_token
+        except InvalidTokenError:
             return False
-    return False  # если токена нет
+    if refresh_token:  # есть ли refresh_token?
+        try:
+            decoded_ref_token = decode_jwt_token(refresh_token)
+            return decoded_ref_token
+        except InvalidTokenError:
+            return False
+    return False
+
+
+# функция для проверки токенов (refresh и access)
+def full_auth_check(is_auth: dict | bool = Depends(token_authenticate_user)):
+    if not is_auth:  # если нету, то перенаправляем на /login
+        raise HTTPException(
+            status_code=302,
+            headers={"Location": "/login"},
+        )
+    if is_auth.get("type") == "refresh":  # если refresh, то перенаправляем на /refresh, чтобы создать access
+        raise HTTPException(
+            status_code=302,
+            headers={"Location": "/refresh"},
+        )
+    return is_auth  # в ином случае возвращаем токен (ожидается access токен)

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Request, Depends, Form
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import RedirectResponse
-from app.utils import token_authenticate_user
+from app.utils import full_auth_check
 from app.database import (
     get_db_func,
     insert_db_func,
@@ -14,14 +14,14 @@ templates = Jinja2Templates(directory="pages/templates/crud")
 
 
 @router.get("")
-def get_db(request: Request, is_auth: dict | bool = Depends(token_authenticate_user)):
+def get_db(request: Request, is_auth: dict | bool = Depends(full_auth_check)):
     if is_auth:
         return templates.TemplateResponse("db-users.html", {"request": request, "database": get_db_func()})
     return RedirectResponse(url="/login", status_code=302)
 
 
 @router.get("/add")
-def add_user_page(request: Request, is_auth: dict | bool = Depends(token_authenticate_user)):
+def add_user_page(request: Request, is_auth: dict | bool = Depends(full_auth_check)):
     if is_auth:
         return templates.TemplateResponse("add-user.html", {"request": request})
     return RedirectResponse(url="/login", status_code=302)
@@ -39,7 +39,7 @@ def add_user_in_db(
 
 
 @router.get("/update")
-def add_user_page(request: Request, is_auth: dict | bool = Depends(token_authenticate_user)):
+def add_user_page(request: Request, is_auth: dict | bool = Depends(full_auth_check)):
     if is_auth:
         return templates.TemplateResponse("update-user.html", {"request": request})
 
@@ -56,7 +56,7 @@ def update_user_in_db(
 
 
 @router.get("/delete")
-def add_user_page(request: Request, is_auth: dict | bool = Depends(token_authenticate_user)):
+def add_user_page(request: Request, is_auth: dict | bool = Depends(full_auth_check)):
     if is_auth:
         return templates.TemplateResponse("delete-user.html", {"request": request})
     return RedirectResponse(url="/login", status_code=302)
