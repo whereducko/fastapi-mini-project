@@ -3,33 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <title>База данных | Добавить</title>
+    <style>
+        h1 {
+            text-align: center;
+        }
+        .attention-text {
+            text-align: center;
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+        .add-user-form {
+            text-align: center;
+            font-size: 20px;
+        }
+        .add-user-form button {
+            margin-top: 15px;
+        }
+        .back-button {
+            text-align: center;
+            margin-top: 40px;
+        }
+    </style>
 </head>
 <body>
-<h1>Добавить пользователя в бд</h1>
-<p>Важно учитывать:<br>
-    - id и username должны быть уникальными<br>
-    - email может быть пустым
+<h1>Добавить пользователя в базу</h1>
+<hr>
+<p class="attention-text">
+    <b>
+        Важно учитывать:
+    </b>
+    <br>
+    - <i>id</i> и <i>username</i> должны быть уникальными
+    <br>
+    - <i>email</i> может быть пустым
 </p>
-<form action="/db/add" method="post">
+<form class="add-user-form" action="/db/add" method="post">
     <div>
-        <label>id</label>
-        <input type="text" name="id_input" required>
+        <label>
+            id<br><input type="text" name="id_input" required>
+        </label>
     </div>
     <div>
-        <label>username</label>
-        <input type="text" name="username_input" required>
+        <label>
+            username<br><input type="text" name="username_input" required>
+        </label>
     </div>
     <div>
-        <label>password</label>
-        <input type="text" name="password_input" required>
+        <label>
+            password<br><input type="text" name="password_input" required>
+        </label>
     </div>
     <div>
-        <label>email</label>
-        <input type="text" name="email_input">
+        <label>
+            email<br><input type="text" name="email_input">
+        </label>
     </div>
     <button type="submit">Добавить</button>
 </form>
-<div style="margin-top: 40px;">
+<div class="back-button">
     <a href="/db">Вернуться</a>
 </div>
 </body>

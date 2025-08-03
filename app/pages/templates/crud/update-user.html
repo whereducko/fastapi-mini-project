@@ -3,30 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <title>База данных | Обновить</title>
+    <style>
+        h1 {
+            text-align: center;
+        }
+        .update-user-form {
+            text-align: center;
+            font-size: 20px;
+            margin-top: 20px;
+        }
+        .update-user-form .id-field {
+            width: 40px;
+        }
+        .update-user-form p {
+            margin: 10px 0;
+        }
+        .update-user-form button {
+            margin-top: 15px;
+        }
+        .back-button {
+            text-align: center;
+            margin-top: 40px;
+        }
+    </style>
 </head>
 <body>
-<h1>Обновить данные пользователя в бд</h1>
-<form action="/db/update" method="post">
+<h1>Обновить данные пользователя в базе</h1>
+<hr>
+<form class="update-user-form" action="/db/update" method="post">
     <div>
-        <label>Введите id пользователя, чьи данные обновить</label>
-        <input type="text" name="id_input" required>
+        <label>
+            Введите id пользователя, чьи данные обновить: <input class="id-field" type="text" name="id_input" required>
+        </label>
     </div>
     <p>Введите новые данные:</p>
     <div>
-        <label>username</label>
-        <input type="text" name="username_input">
+        <label>
+            username<br><input type="text" name="username_input">
+        </label>
     </div>
     <div>
-        <label>password</label>
-        <input type="text" name="password_input">
+        <label>
+            password<br><input type="text" name="password_input">
+        </label>
     </div>
     <div>
-        <label>email</label>
-        <input type="text" name="email_input">
+        <label>
+            email<br><input type="text" name="email_input">
+        </label>
     </div>
     <button type="submit">Обновить</button>
 </form>
-<div style="margin-top: 40px;">
+<div class="back-button">
     <a href="/db">Вернуться</a>
 </div>
 </body>

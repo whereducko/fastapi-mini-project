@@ -3,24 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <title>Войти в аккаунт</title>
+    <style>
+        h1 {
+            text-align: center;
+        }
+        .login-form {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 20px;
+        }
+        .button-submit {
+            margin-top: 20px;
+            margin-left: 95px;
+        }
+        .pass-input {
+            margin-top: 10px;
+        }
+        .register-redirect {
+            text-align: center;
+            margin-top: 40px;
+        }
+    </style>
 </head>
 <body>
 <h1>Войти</h1>
 <hr>
-<form action="/login" method="post">
-    <div>
-        <label>Логин</label>
-        <input type="text" name="login_input">
+<form class="login-form" action="/login" method="post">
+    <div class="login-input">
+        <label>
+            Логин<br><input type="text" name="login_input" placeholder="">
+        </label>
     </div>
-    <div>
-        <label>Пароль</label>
-        <input type="password" name="pass_input" required>
+    <div class="pass-input">
+        <label>
+            Пароль<br><input type="password" name="pass_input" required>
+        </label>
     </div>
-    <button type="submit">Отправить</button>
+    <button class="button-submit" type="submit">Отправить</button>
 </form>
-<div style="margin-top: 15px;">
+<div class="register-redirect">
     <a href="/register">
-        <button>Зарегистрироваться</button>
+        Зарегистрироваться
     </a>
 </div>
 </body>

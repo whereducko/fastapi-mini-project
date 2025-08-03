@@ -3,17 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <title>База данных | Удалить</title>
+    <style>
+        h1 {
+            text-align: center;
+        }
+        .delete-user-form {
+            text-align: center;
+            font-size: 20px;
+            margin-top: 20px;
+        }
+        .delete-user-form .id-field {
+            width: 40px;
+        }
+        .delete-user-form button {
+            margin-top: 15px;
+        }
+        .back-button {
+            text-align: center;
+            margin-top: 40px;
+        }
+    </style>
 </head>
 <body>
 <h1>Удалить пользователя из бд</h1>
-<form action="/db/delete" method="post">
+<hr>
+<form class="delete-user-form" action="/db/delete" method="post">
     <div>
-        <label>Введите id пользователя, чьи данные удалить</label>
-        <input type="text" name="id_input" required>
+        <label>
+            Введите id пользователя, чьи данные удалить: <input class="id-field" type="text" name="id_input" required>
+        </label>
     </div>
     <button type="submit">Удалить</button>
 </form>
-<div style="margin-top: 40px;">
+<div class="back-button">
     <a href="/db">Вернуться</a>
 </div>
 </body>
