@@ -57,6 +57,7 @@ def add_user_in_db(
 def add_user_page(request: Request, is_auth: dict | bool = Depends(full_auth_check)):
     if is_auth:
         return templates.TemplateResponse("update-user.html", {"request": request})
+    return RedirectResponse(url="/login", status_code=302)
 
 
 @router.post("/update")
@@ -86,9 +87,10 @@ def delete_user_from_db(
 
 
 @router.get("/experiments")
-def experiments_page(request: Request):
-    return templates.TemplateResponse("experimental.html", {"request": request})
-
+def experiments_page(request: Request, is_auth: dict | bool = Depends(full_auth_check)):
+    if is_auth:
+        return templates.TemplateResponse("experimental.html", {"request": request})
+    return RedirectResponse(url="/login", status_code=302)
 
 @router.post("/experiments/add-more-users")
 def experiments_things(
