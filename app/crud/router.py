@@ -26,7 +26,7 @@ def get_db(
             {
                 "request": request,
                 "number_page": page,
-                "count_rows": get_count_rows_db(),
+                "count_pages": int((get_count_rows_db() / 100 + 0.99) // 1),
                 "database": get_db_func(100, (page - 1) * 100),
             }
         )
