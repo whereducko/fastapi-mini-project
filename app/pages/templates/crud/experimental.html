@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>База данных | Эксперименты</title>
+    <style>
+        h1 {
+            text-align: center;
+        }
+        h2 {
+            text-align: center;
+        }
+        .add-more-users-form {
+            text-align: center;
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+        .add-more-users-form .count-users {
+            width: 40px;
+        }
+        .add-more-users-form button {
+            margin-top: 15px;
+        }
+        .delete-all-db {
+            text-align: center;
+        }
+        .back-button {
+            text-align: center;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+<h1>Экспериментальные штуки</h1>
+<hr>
+<h2>Добавить определенное кол-во пользователей (только для пустой бд)</h2>
+<form class="add-more-users-form" action="/db/experiments/add-more-users" method="post">
+    <div>
+        <label>
+            Какое кол-во пользователей добавить: <input class="count-users" type="text" name="count_users" maxlength="4" required>
+        </label>
+    </div>
+    <button type="submit">Добавить</button>
+</form>
+<hr>
+<h2>Очистить всю базу данных</h2>
+<form class="delete-all-db" action="/db/experiments/delete-all-users" method="post">
+    <div>
+        <button type="submit">Удалить</button>
+    </div>
+</form>
+<div class="back-button">
+    <a href="/db">Вернуться</a>
+</div>
+</body>
+</html>

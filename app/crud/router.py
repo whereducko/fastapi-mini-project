@@ -8,6 +8,8 @@ from app.database import (
     update_db_func,
     delete_user_from_db_func,
     get_count_rows_db,
+    insert_more_data_db,
+    delete_all_data_from_db,
 )
 
 router = APIRouter(prefix="/db", tags=["БД. CRUD"])
@@ -80,4 +82,23 @@ def delete_user_from_db(
         id_input: str = Form(...),
 ):
     delete_user_from_db_func(int(id_input))
+    return RedirectResponse("/db", status_code=302)
+
+
+@router.get("/experiments")
+def experiments_page(request: Request):
+    return templates.TemplateResponse("experimental.html", {"request": request})
+
+
+@router.post("/experiments/add-more-users")
+def experiments_things(
+        count_users: str = Form(...),
+):
+    insert_more_data_db(int(count_users))
+    return RedirectResponse("/db", status_code=302)
+
+
+@router.post("/experiments/delete-all-users")
+def experiments_things():
+    delete_all_data_from_db()
     return RedirectResponse("/db", status_code=302)

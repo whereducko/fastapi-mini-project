@@ -135,3 +135,27 @@ def delete_user_from_db_func(user_id: int):
         session.commit()
     except DatabaseError:
         session.rollback()
+
+
+def insert_more_data_db(count: int):
+    try:
+        for i in range(count):
+            session.execute(
+                insert(Users).values(
+                    id=i,
+                    username=f"user with id {i}",
+                    password="random password",
+                    email="test@example.com",
+                )
+            )
+        session.commit()
+    except DatabaseError:
+        session.rollback()
+
+
+def delete_all_data_from_db():
+    try:
+        session.execute(delete(Users))
+        session.commit()
+    except DatabaseError:
+        session.rollback()
