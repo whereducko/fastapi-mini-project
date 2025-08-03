@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, select, insert, update, delete
+from sqlalchemy import create_engine, select, insert, update, delete, func
 from sqlalchemy.orm import declarative_base, Mapped, mapped_column, sessionmaker
 from sqlalchemy.exc import DatabaseError
 
@@ -56,9 +56,36 @@ class Users(Base):
 # # создать таблицу
 # Base.metadata.create_all(engine)
 
-def get_db_func():
-    result = session.execute(select(Users.id, Users.username, Users.password, Users.email))
-    return result.mappings().all()
+
+# функция для вывода информации с бд + пагинация
+def get_db_func(limit_count: int, offset_count: int):
+    result = session.execute(
+        select(Users.id, Users.username, Users.password, Users.email).limit(limit_count).offset(offset_count)
+    )
+    final_list = list(result.mappings().all())
+    if offset_count > 0:
+        exists_prev_data = session.execute(
+            select(Users.id, Users.username, Users.password, Users.email).limit(1).offset(offset_count - 1)
+        )
+        start_data = exists_prev_data.mappings().all()
+        if len(start_data) >= 1:
+            final_list.insert(0, offset_count // 100)
+    else:
+        final_list.insert(0, 0)
+    exists_next_data = session.execute(
+        select(Users.id, Users.username, Users.password, Users.email).limit(1).offset(offset_count + 100)
+    )
+    end_data = exists_next_data.mappings().all()
+    if len(end_data) >= 1:
+        final_list.append(offset_count // 100 + 2)
+    else:
+        final_list.append(0)
+    return final_list
+
+
+def get_count_rows_db():
+    count = session.execute(select(func.count()).select_from(Users))
+    return count.scalar()
 
 
 def insert_db_func(

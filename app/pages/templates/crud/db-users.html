@@ -4,8 +4,31 @@
     <meta charset="UTF-8">
     <title>База данных</title>
     <style>
+        h1 {
+            text-align: center;
+        }
         .links {
-            margin: 7px 0;
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            align-items: center;
+        }
+        .table-users {
+            margin: 20px auto;
+        }
+        .field {
+            width: 25%;
+            text-align: center;
+        }
+        .pagination {
+            padding: 0;
+            list-style-type: none;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        .active-button {
+            background-color: darkgrey;
         }
     </style>
 </head>
@@ -13,37 +36,66 @@
 <h1>
     База данных пользователей
 </h1>
-<table border="1" style="margin-bottom: 15px;">
+<div class="links">
+    <a href="/db/add">
+        <button>Добавить</button>
+    </a>
+    <a href="/db/update">
+        <button>Обновить</button>
+    </a>
+    <a href="/db/delete">
+        <button>Удалить</button>
+    </a>
+</div>
+<table border="1" class="table-users">
     <thead>
-        <tr>
-            <th>id</th>
-            <th>username</th>
-            <th>password</th>
-            <th>email</th>
-        </tr>
+    <tr>
+        <th>id</th>
+        <th>username</th>
+        <th>password</th>
+        <th>email</th>
+    </tr>
     </thead>
     <tbody>
     {% for user in database %}
-        <tr>
-            <td>{{ user["id"] }}</td>
-            <td>{{ user["username"] }}</td>
-            <td>{{ user["password"] }}</td>
-            <td>{{ user["email"] }}</td>
-        </tr>
+    {% if not loop.last and not loop.first %}
+    <tr>
+        <td class="field">{{ user["id"] }}</td>
+        <td class="field">{{ user["username"] }}</td>
+        <td class="field">{{ user["password"] }}</td>
+        <td class="field">{{ user["email"] }}</td>
+    </tr>
+    {% endif %}
     {% endfor %}
     </tbody>
 </table>
+<ul class="pagination">
+    {% if database | first >= 1 %}
+    <li>
+        <a href="/db?page={{ database | first }}">
+            <button>Пред.</button>
+        </a>
+    </li>
+    {% endif %}
+    {% for i in range(1, (count_rows // 100) + 1) %}
+    <li>
+        <a href="/db?page={{ i }}">
+            <button class="{% if i == number_page %}active-button{% endif %}">{{ i }}</button>
+        </a>
+    </li>
+    {% endfor %}
+    {% if database | last >= 1 %}
+    <li>
+        <a href="/db?page={{ database | last }}">
+            <button>След.</button>
+        </a>
+    </li>
+    {% endif %}
+</ul>
 <div class="links">
-    <a href="/db/add">Добавить пользователя</a>
-</div>
-<div class="links">
-    <a href="/db/update">Обновить данные пользователя</a>
-</div>
-<div class="links">
-    <a href="/db/delete">Удалить пользователя</a>
-</div>
-<div style="margin-top: 40px;">
-    <a href="/">Вернуться на главную страницу</a>
+    <a href="/">
+        <button>Вернуться на главную страницу</button>
+    </a>
 </div>
 </body>
 </html>

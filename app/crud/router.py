@@ -6,7 +6,8 @@ from app.database import (
     get_db_func,
     insert_db_func,
     update_db_func,
-    delete_user_from_db_func
+    delete_user_from_db_func,
+    get_count_rows_db,
 )
 
 router = APIRouter(prefix="/db", tags=["БД. CRUD"])
@@ -14,9 +15,21 @@ templates = Jinja2Templates(directory="pages/templates/crud")
 
 
 @router.get("")
-def get_db(request: Request, is_auth: dict | bool = Depends(full_auth_check)):
+def get_db(
+        request: Request,
+        page: int = 1,
+        is_auth: dict | bool = Depends(full_auth_check)
+):
     if is_auth:
-        return templates.TemplateResponse("db-users.html", {"request": request, "database": get_db_func()})
+        return templates.TemplateResponse(
+            "db-users.html",
+            {
+                "request": request,
+                "number_page": page,
+                "count_rows": get_count_rows_db(),
+                "database": get_db_func(100, (page - 1) * 100),
+            }
+        )
     return RedirectResponse(url="/login", status_code=302)
 
 
