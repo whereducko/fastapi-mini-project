@@ -12,11 +12,23 @@ from utils import (
     token_authenticate_user,
     full_auth_check,
 )
+from contextlib import asynccontextmanager
+from database import client
+
+
+@asynccontextmanager
+async def lifespan(the_app):
+    print("Приложение запущено.")
+    yield
+    client.flushdb()  # очищаем redis
+    print("Приложение выключено.")
+
 
 app = FastAPI(
+    lifespan=lifespan,
     summary="Мини-проект от @whereducko",
     description="[github](https://github.com/whereducko)",
-    version="0.1")
+    version="0.2")
 app.include_router(crud_router)
 templates = Jinja2Templates(directory="pages/templates")
 

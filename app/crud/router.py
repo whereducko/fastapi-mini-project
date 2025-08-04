@@ -10,6 +10,7 @@ from app.database import (
     get_count_rows_db,
     insert_more_data_db,
     delete_all_data_from_db,
+    is_cache_on_the_page,
 )
 
 router = APIRouter(prefix="/db", tags=["БД. CRUD"])
@@ -29,7 +30,8 @@ def get_db(
                 "request": request,
                 "number_page": page,
                 "count_pages": int((get_count_rows_db() / 100 + 0.99) // 1),
-                "database": get_db_func(100, (page - 1) * 100),
+                "is_cache": is_cache_on_the_page(page),
+                "database": get_db_func(100, (page - 1) * 100, page),
             }
         )
     return RedirectResponse(url="/login", status_code=302)

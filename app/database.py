@@ -1,3 +1,4 @@
+import redis
 from sqlalchemy import create_engine, select, insert, update, delete, func
 from sqlalchemy.orm import declarative_base, Mapped, mapped_column, sessionmaker
 from sqlalchemy.exc import DatabaseError
@@ -42,6 +43,9 @@ session_hz = sessionmaker(engine)
 session = session_hz()
 Base = declarative_base()
 
+# client для работы с redis. Установлены дефолт значения для host, port и db
+client = redis.Redis(decode_responses=True)
+
 
 # модель (таблица) users
 class Users(Base):
@@ -57,30 +61,35 @@ class Users(Base):
 # Base.metadata.create_all(engine)
 
 
-# функция для вывода информации с бд + пагинация
-def get_db_func(limit_count: int, offset_count: int):
-    result = session.execute(
-        select(Users.id, Users.username, Users.password, Users.email).limit(limit_count).offset(offset_count)
-    )
-    final_list = list(result.mappings().all())
-    if offset_count > 0:
-        exists_prev_data = session.execute(
-            select(Users.id, Users.username, Users.password, Users.email).limit(1).offset(offset_count - 1)
+# функция для вывода информации с бд (+ кэширование с redis)
+def get_db_func(limit_count: int, offset_count: int, page: int = 1):
+    last_user_for_redis = (page * 100) - 1
+    if client.exists(f"user:{last_user_for_redis}"):
+        redis_list = []
+        new_temp_db = [f"user:{i}" for i in range((page - 1) * 100, (page * 100))]
+        for data in new_temp_db:
+            unit_data = client.hgetall(data)
+            redis_list.append(unit_data)
+        redis_list.insert(0, 1)
+        return redis_list
+    else:
+        result = session.execute(
+            select(Users.id, Users.username, Users.password, Users.email).limit(limit_count).offset(offset_count)
         )
-        start_data = exists_prev_data.mappings().all()
-        if len(start_data) >= 1:
-            final_list.insert(0, offset_count // 100)
+        postgres_list = list(result.mappings().all())
+        for data in postgres_list:
+            client.hset(f"user:{data.get("id")}", mapping=data)
+            client.expire(f"user:{data.get("id")}", 60)  # жизнь кэша в 60 секунд
+        postgres_list.insert(0, 0)
+        return postgres_list
+
+
+def is_cache_on_the_page(page: int):
+    last_user_for_redis = (page * 100) - 1
+    if client.exists(f"user:{last_user_for_redis}"):
+        return "redis (активно 60 сек.)"
     else:
-        final_list.insert(0, 0)
-    exists_next_data = session.execute(
-        select(Users.id, Users.username, Users.password, Users.email).limit(1).offset(offset_count + 100)
-    )
-    end_data = exists_next_data.mappings().all()
-    if len(end_data) >= 1:
-        final_list.append(offset_count // 100 + 2)
-    else:
-        final_list.append(0)
-    return final_list
+        return "PostgreSQL"
 
 
 def get_count_rows_db():
@@ -156,6 +165,7 @@ def insert_more_data_db(count: int):
 def delete_all_data_from_db():
     try:
         session.execute(delete(Users))
+        client.flushdb()
         session.commit()
     except DatabaseError:
         session.rollback()
